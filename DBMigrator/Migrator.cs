@@ -49,8 +49,9 @@ namespace DBMigrator
 
                     _database.UpdateLog(rollbackToVersion);
 
-                    _database.CommitTransaction();
                 }
+
+                _database.CommitTransaction();
             }
             catch (Exception ex)
             {
