@@ -27,7 +27,7 @@ namespace DBMigrator
         {
             _database.BeginTransaction();
 
-            if (versionsToRollback.Count() == 0)
+            if (versionsToRollback.Count == 0)
             {
                 _logger.Log("No downgrades found");
             }
@@ -36,7 +36,7 @@ namespace DBMigrator
             {
                 foreach (var rollbackToVersion in versionsToRollback)
                 {
-                _logger.Log($"Downgrading to version {rollbackToVersion.Name}");
+                    _logger.Log($"Downgrading to version {rollbackToVersion.Name}");
                 
 
                     _database.UpdateDatabaseVersion(rollbackToVersion);
@@ -47,11 +47,12 @@ namespace DBMigrator
                     }
 
                     _database.UpdateLog(rollbackToVersion);
-
-                    //throw "test"
+                    
                     _database.CommitTransaction();
                 }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 _logger.Log(ex.Message);
                 _database.RollbackTransaction();
             }
@@ -63,13 +64,14 @@ namespace DBMigrator
         {
             _database.BeginTransaction();
 
-            if(versionsToUpgrade.Count() == 0)
+            if (versionsToUpgrade.Count == 0)
             {
                 _logger.Log("No upgrades found");
                 return;
             }
             
-            try {
+            try
+            {
                 foreach (var upgradeToVersion in versionsToUpgrade)
                 {
                     _logger.Log($"--Upgrading to version {upgradeToVersion.Name}");
@@ -83,9 +85,11 @@ namespace DBMigrator
 
                     _database.UpdateLog(upgradeToVersion);
                 }
-                //throw "test"
+
                 _database.CommitTransaction();
-            } catch(Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 _logger.Log(ex.Message);
                 _database.RollbackTransaction();
             }
@@ -93,7 +97,8 @@ namespace DBMigrator
             _database.Close();
         }
 
-        private void DowngradeFeature(Feature feature){
+        private void DowngradeFeature(Feature feature)
+        {
             _logger.Log($"Downgrading database feature {feature.Name}");
 
             foreach (var script in feature.RollbackScripts)
@@ -103,7 +108,8 @@ namespace DBMigrator
             }
         }
 
-        private void UpgradeFeature(Feature feature){
+        private void UpgradeFeature(Feature feature)
+        {
             _logger.Log($"----Upgrading database with feature: {feature.Name}");
             
             foreach (var script in feature.UpgradeScripts)
