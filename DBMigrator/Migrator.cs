@@ -65,8 +65,6 @@ namespace DBMigrator
 
         public void Upgrade(List<DBVersion> versionsToUpgrade)
         {
-            _database.BeginTransaction();
-
             if (versionsToUpgrade.Count == 0)
             {
                 _logger.Log("No upgrades found");
@@ -75,6 +73,8 @@ namespace DBMigrator
 
             try
             {
+                _database.BeginTransaction();
+
                 foreach (var upgradeToVersion in versionsToUpgrade)
                 {
                     _logger.Log($"--Upgrading to version {upgradeToVersion.Name}");
