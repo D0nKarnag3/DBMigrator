@@ -25,15 +25,16 @@ namespace DBMigrator
 
         public void Rollback(List<DBVersion> versionsToRollback)
         {
-            _database.BeginTransaction();
-
             if (versionsToRollback.Count == 0)
             {
                 _logger.Log("No downgrades found");
+                return;
             }
 
             try
             {
+                _database.BeginTransaction();
+
                 foreach (var rollbackToVersion in versionsToRollback)
                 {
                     _logger.Log($"Downgrading to version {rollbackToVersion.Name}");
@@ -47,7 +48,7 @@ namespace DBMigrator
                     }
 
                     _database.UpdateLog(rollbackToVersion);
-                    
+
                     _database.CommitTransaction();
                 }
             }
@@ -56,8 +57,10 @@ namespace DBMigrator
                 _logger.Log(ex.Message);
                 _database.RollbackTransaction();
             }
-
-            _database.Close();
+            finally
+            {
+                _database.Close();
+            }
         }
 
         public void Upgrade(List<DBVersion> versionsToUpgrade)
@@ -69,7 +72,7 @@ namespace DBMigrator
                 _logger.Log("No upgrades found");
                 return;
             }
-            
+
             try
             {
                 foreach (var upgradeToVersion in versionsToUpgrade)
@@ -93,8 +96,11 @@ namespace DBMigrator
                 _logger.Log(ex.Message);
                 _database.RollbackTransaction();
             }
-
-            _database.Close();
+            finally
+            {
+                _database.Close();
+            }
+            
         }
 
         private void DowngradeFeature(Feature feature)
